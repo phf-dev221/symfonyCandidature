@@ -34,6 +34,9 @@ class Formation
     #[ORM\Column]
     private ?int $duree = null;
 
+    #[ORM\Column]
+    private ?bool $isClotured = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -95,6 +98,18 @@ class Formation
     public function setDuree(int $duree): static
     {
         $this->duree = $duree;
+
+        return $this;
+    }
+
+    public function isIsClotured(): ?bool
+    {
+        return $this->isClotured;
+    }
+
+    public function setIsClotured(bool $isClotured): static
+    {
+        $this->isClotured = $isClotured;
 
         return $this;
     }

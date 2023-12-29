@@ -11,6 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class FormationController extends AbstractController
@@ -24,17 +25,59 @@ class FormationController extends AbstractController
 
         if ($errors->count() > 0) {
             return new JsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
-        }else {
+        } else {
             $em->persist($formation);
             $em->flush();
             return new JsonResponse($serializer->serialize($formation, 'json'), JsonResponse::HTTP_CREATED, [], true);
         }
     }
 
-#[Route('/api/formation/index', name:"allFormation", methods: ['GET'])]
-public function index(FormationRepository $formationRepository, SerializerInterface $serializer, ):JsonResponse
-{
-    $formations = $formationRepository->findAll();
-}
+    #[Route('/api/formation/index', name: "allFormation", methods: ['GET'])]
+    public function index(FormationRepository $formationRepository, SerializerInterface $serializer, ): JsonResponse
+    {
+        $formations = $formationRepository->findBy(['isClotured' => false]);
 
+        return new JsonResponse($serializer->serialize($formations, 'json'), JsonResponse::HTTP_OK, [], true);
+
+    }
+
+    #[Route('/api/formations/{id}', name: "showFormation", methods: ['GET'])]
+
+    public function show(Formation $formation, SerializerInterface $serializer): JsonResponse
+    {
+        $jsonFormation = $serializer->serialize($formation, 'json');
+
+        return new JsonResponse($jsonFormation, Response::HTTP_OK, ['accept' => 'json'], true);
+
+    }
+
+    #[Route('/api/formations/delete/{id}', name: "deleteFormation", methods: ['post'])]
+
+    public function delete(Formation $formation, EntityManagerInterface $em): JsonResponse
+    {
+        $em->remove($formation);
+        $em->flush();
+
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+    }
+
+    #[Route('/api/formations/update/{id}', name: "modifierFormation", methods: ['post'])]
+    public function update(Formation $formation, Request $req, ValidatorInterface $validator, SerializerInterface $serializer, EntityManagerInterface $em): JsonResponse
+    {
+        if ($formation) {
+            $data = $serializer->deserialize($req->getContent(),
+                Formation::class, 'json',
+                [AbstractNormalizer::OBJECT_TO_POPULATE => $formation]);
+
+            $errors = $validator->validate($data);
+            if ($errors->count() > 0) {
+                return new JsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
+            }
+            $em->persist($data);
+            $em->flush();
+            return new JsonResponse($serializer->serialize($data, 'json'), Response::HTTP_OK, ['accept' => 'json'], true);
+        } else {
+            return new JsonResponse("Cette formation n'existe pas.", Response::HTTP_NOT_FOUND);
+        }
+    }
 }
