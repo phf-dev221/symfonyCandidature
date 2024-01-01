@@ -37,7 +37,7 @@ class CandidatureController extends AbstractController
         $candidature->setStatut(true);
 
         $em->flush();
-        return new JsonResponse(['message' => 'Candidature status updated successfully.'], JsonResponse::HTTP_OK);
+        return new JsonResponse(['message' => 'Candidature refusée'], JsonResponse::HTTP_OK);
     }
 
     #[Route('/api/candidatures/accepted', name: 'candidature_accepted', methods: ['GET'])]

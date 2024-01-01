@@ -10,12 +10,13 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Serializer\SerializerInterface;
  
 #[Route('/api', name: 'api_')]
 class UserController extends AbstractController
 {
     #[Route('/register', name: 'register', methods: 'post')]
-    public function index(ManagerRegistry $doctrine, Request $request, UserPasswordHasherInterface $passwordHasher): JsonResponse
+    public function index(ManagerRegistry $doctrine, Request $request, UserPasswordHasherInterface $passwordHasher, SerializerInterface $serializer): JsonResponse
     {
         $em = $doctrine->getManager();
         $decoded = json_decode($request->getContent());
@@ -37,7 +38,7 @@ class UserController extends AbstractController
         $em->persist($user);
         $em->flush();
    
-        return $this->json(['message' => 'Registered Successfully']);
+        return new JsonResponse($serializer->serialize($user, 'json'), JsonResponse::HTTP_OK, [], true);
     }
 
     #[Route('/logout', name: 'app_logout', methods: ['POST'])]

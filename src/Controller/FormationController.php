@@ -52,7 +52,7 @@ class FormationController extends AbstractController
         return new JsonResponse($jsonFormation, Response::HTTP_OK, ['accept' => 'json'], true);
 
     }
-    #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour effectuer cette action')]
+    // #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour effectuer cette action')]
     #[Route('/api/formations/delete/{id}', name: "deleteFormation", methods: ['post'])]
 
     public function delete(Formation $formation, EntityManagerInterface $em): JsonResponse
