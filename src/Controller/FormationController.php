@@ -10,12 +10,14 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class FormationController extends AbstractController
 {
+    // #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour effectuer cette action')]
     #[Route('/api/formation/create', name: 'create_formation', methods: ['POST'])]
     public function register(EntityManagerInterface $em, Request $request, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
     {
@@ -50,7 +52,7 @@ class FormationController extends AbstractController
         return new JsonResponse($jsonFormation, Response::HTTP_OK, ['accept' => 'json'], true);
 
     }
-
+    #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour effectuer cette action')]
     #[Route('/api/formations/delete/{id}', name: "deleteFormation", methods: ['post'])]
 
     public function delete(Formation $formation, EntityManagerInterface $em): JsonResponse
@@ -60,14 +62,17 @@ class FormationController extends AbstractController
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
-
+    #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour effectuer cette action')]
     #[Route('/api/formations/update/{id}', name: "modifierFormation", methods: ['post'])]
     public function update(Formation $formation, Request $req, ValidatorInterface $validator, SerializerInterface $serializer, EntityManagerInterface $em): JsonResponse
     {
         if ($formation) {
-            $data = $serializer->deserialize($req->getContent(),
-                Formation::class, 'json',
-                [AbstractNormalizer::OBJECT_TO_POPULATE => $formation]);
+            $data = $serializer->deserialize(
+                $req->getContent(),
+                Formation::class,
+                'json',
+                [AbstractNormalizer::OBJECT_TO_POPULATE => $formation]
+            );
 
             $errors = $validator->validate($data);
             if ($errors->count() > 0) {
