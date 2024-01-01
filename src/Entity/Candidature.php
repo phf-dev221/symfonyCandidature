@@ -7,45 +7,35 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\CandidatureRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-
 #[ORM\Entity(repositoryClass: CandidatureRepository::class)]
 #[ApiResource()]
+
 class Candidature
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["candidature"])]
     private ?int $id = null;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-
-    private ?Formation $formation = null;
-
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-
+    #[ORM\ManyToOne(inversedBy: 'candidatures')]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Groups(["candidature"])]
     private ?User $user = null;
 
-    #[ORM\Column]
+    #[ORM\ManyToOne(inversedBy: 'candidatures')]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Groups(["candidature"])]
+   
+    private ?Formation $formation = null;
 
+    #[ORM\Column]
+    #[Groups(["candidature"])]
     private ?bool $statut = null;
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getFormation(): ?Formation
-    {
-        return $this->formation;
-    }
-
-    public function setFormation(?Formation $formation): static
-    {
-        $this->formation = $formation;
-
-        return $this;
     }
 
     public function getUser(): ?User
@@ -56,6 +46,18 @@ class Candidature
     public function setUser(?User $user): static
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getFormation(): ?Formation
+    {
+        return $this->formation;
+    }
+
+    public function setFormation(?Formation $formation): static
+    {
+        $this->formation = $formation;
 
         return $this;
     }

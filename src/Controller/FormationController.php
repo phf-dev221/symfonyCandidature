@@ -39,7 +39,9 @@ class FormationController extends AbstractController
     {
         $formations = $formationRepository->findBy(['isClotured' => false]);
 
-        return new JsonResponse($serializer->serialize($formations, 'json'), JsonResponse::HTTP_OK, [], true);
+        $jsonFormList = $serializer->serialize($formations, 'json', ['groups' => 'formation']);
+
+        return new JsonResponse($jsonFormList, JsonResponse::HTTP_OK, [], true);
 
     }
 
@@ -47,9 +49,9 @@ class FormationController extends AbstractController
 
     public function show(Formation $formation, SerializerInterface $serializer): JsonResponse
     {
-        $jsonFormation = $serializer->serialize($formation, 'json');
+        $jsonFormList = $serializer->serialize($formation, 'json', ['groups' => 'formation']);
 
-        return new JsonResponse($jsonFormation, Response::HTTP_OK, ['accept' => 'json'], true);
+        return new JsonResponse($jsonFormList, Response::HTTP_OK, ['accept' => 'json'], true);
 
     }
     // #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour effectuer cette action')]
