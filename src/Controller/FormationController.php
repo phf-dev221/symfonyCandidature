@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class FormationController extends AbstractController
 {
-    // #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour effectuer cette action')]
+     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour effectuer cette action')]
     #[Route('/api/formation/create', name: 'create_formation', methods: ['POST'])]
     public function register(EntityManagerInterface $em, Request $request, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
     {
@@ -54,7 +54,7 @@ class FormationController extends AbstractController
         return new JsonResponse($jsonFormList, Response::HTTP_OK, ['accept' => 'json'], true);
 
     }
-    // #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour effectuer cette action')]
+     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour effectuer cette action')]
     #[Route('/api/formations/delete/{id}', name: "deleteFormation", methods: ['post'])]
 
     public function delete(Formation $formation, EntityManagerInterface $em): JsonResponse
@@ -87,4 +87,5 @@ class FormationController extends AbstractController
             return new JsonResponse("Cette formation n'existe pas.", Response::HTTP_NOT_FOUND);
         }
     }
+    //8dd4ff9902bf
 }

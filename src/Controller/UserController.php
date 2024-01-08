@@ -37,8 +37,11 @@ class UserController extends AbstractController
         $user->setUsername($email);
         $em->persist($user);
         $em->flush();
+
+        $cands = $serializer->serialize($user, 'json', ['groups' => 'user']);
+
    
-        return new JsonResponse($serializer->serialize($user, 'json'), JsonResponse::HTTP_OK, [], true);
+        return new JsonResponse($cands, JsonResponse::HTTP_OK, [], true);
     }
 
     #[Route('/logout', name: 'app_logout', methods: ['POST'])]
